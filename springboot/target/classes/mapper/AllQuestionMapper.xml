@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.AllquestionMapper">
+
+    <sql id="Base_Column_List">
+        id,type,content,A,B,C,D,detail,answer,paper
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.Allquestion">
+        select
+        <include refid="Base_Column_List" />
+        from manager.allquestion
+        <where>
+            <if test="type != null"> and type = #{type}</if>
+            <if test="content != null"> and content like concat('%', #{content}, '%')</if>
+            <if test="A != null"> and A like concat('%', #{A}, '%')</if>
+            <if test="B != null"> and B like concat('%', #{B}, '%')</if>
+            <if test="C != null"> and C like concat('%', #{C}, '%')</if>
+            <if test="D != null"> and D like concat('%', #{D}, '%')</if>
+            <if test="detail != null"> and detail like concat('%', #{detail}, '%')</if>
+            <if test="answer != null"> and answer like concat('%', #{answer}, '%')</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Allquestion">
+        select
+        <include refid="Base_Column_List" />
+        from manager.allquestion
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from manager.allquestion
+        where  id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Allquestion" useGeneratedKeys="true" >
+        insert into manager.allquestion
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="type != null">type,</if>
+            <if test="content != null">content,</if>
+            <if test="A != null">A,</if>
+            <if test="B != null">B,</if>
+            <if test="C != null">C,</if>
+            <if test="D != null">D,</if>
+            <if test="detail != null">detail,</if>
+            <if test="answer != null">answer,</if>
+            <if test="paper != null">paper,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="type != null">#{type},</if>
+            <if test="content != null">#{content},</if>
+            <if test="A != null">#{A},</if>
+            <if test="B != null">#{B},</if>
+            <if test="C != null">#{C},</if>
+            <if test="D != null">#{D},</if>
+            <if test="detail != null">#{detail},</if>
+            <if test="answer != null">#{answer},</if>
+            <if test="paper != null">#{paper},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Allquestion">
+        update manager.allquestion
+        <set>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="A != null">
+                A = #{A},
+            </if>
+            <if test="B != null">
+                B = #{B},
+            </if>
+            <if test="C != null">
+                C = #{C},
+            </if>
+            <if test="D != null">
+                D = #{D},
+            </if>
+            <if test="detail != null">
+                detail = #{detail},
+            </if>
+            <if test="answer != null">
+                answer = #{answer},
+            </if>
+            <if test="paper != null">
+                paper = #{paper},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>
