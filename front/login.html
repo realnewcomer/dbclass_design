@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>登录</title>
-  <link rel="stylesheet" href="./userlogin.css">
+  <link rel="stylesheet" href="./login.css">
   <link rel="stylesheet" href="./sweetalert2.min.css">
   <script src="./sweetalert2@11.js"></script>
   <script src="./jsencrypt.min.js"></script>
@@ -37,7 +37,7 @@
           <input type="password" placeholder="Enter Password" name="psw" id="psw" minlength="8" maxlength="16" pattern="[a-zA-Z0-9!@#$%^&*()_+-=]+" required>
           <!-- 为用户和管理员添加不同的登录按钮 -->
           <button type="button" id="loginButtonUser">用户登录</button>
-          <button type="button" id="loginButtonAdmin" style="display:none;">管理员登录</button>
+          <button type="button" id="loginButtonManager" style="display:none;">管理员登录</button>
         </div>
         <div style="text-align:center; margin-top: 16px;">
           <span>还没有账号？ <a href="#" id="regUser" onclick="showUserRegisterPopup()">立即注册</a></span>
@@ -63,7 +63,7 @@
   });
   </script>
   <script src="AES.js"></script>
-  <script src="userlogin.js"></script>
+  <script src="login.js"></script>
   <script src="socket.js"></script>
 </body>
 </html>

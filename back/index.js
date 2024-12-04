@@ -28,7 +28,7 @@ server.on("connection", function (wss)
     {
         const msg = JSON.parse(data);
         console.log(msg);
-        if (msg.type === "login")
+        if (msg.type === "userLogin")
         {
             const sessionKey_first = keySessionKeyValueWss(wss, session_ws)
             let uid = AES.decryptAES(msg.uid, sessionKey_first)
@@ -37,10 +37,10 @@ server.on("connection", function (wss)
             {
                 if (row[0].cipher === cipher)
                 {
-                    if (findusername(AES.decryptAES(msg.uid, sessionKey_first), token_username))
+                    if (findusername(uid, token_username))
                     {
                         wss.send(JSON.stringify({
-                            type: "login",
+                            type: "userLogin",
                             success: false,
                             reason: 'exist'
                         }));
@@ -51,9 +51,9 @@ server.on("connection", function (wss)
                         const token = generateRandomString(15);
                         console.log(token)
                         console.log('登录成功');
-                        token_username.set(token, AES.decryptAES(msg.uid, sessionKey_first))
+                        token_username.set(token, uid)
                         wss.send(JSON.stringify({
-                            type: "login",
+                            type: "userLogin",
                             success: true,
                             token: AES.encryptAES(token, sessionKey_first)
                         }));
@@ -62,7 +62,7 @@ server.on("connection", function (wss)
                 else
                 {
                     wss.send(JSON.stringify({
-                        type: "login",
+                        type: "userLogin",
                         success: false,
                         reason: 'wrong'
                     }));
@@ -71,7 +71,55 @@ server.on("connection", function (wss)
             {
                 console.error(err);
                 wss.send(JSON.stringify({
-                    type: "login",
+                    type: "userLogin",
+                    success: false
+                }));
+            });
+        }
+        if (msg.type === "managerLogin")
+        {
+            const sessionKey_first = keySessionKeyValueWss(wss, session_ws)
+            let mid = AES.decryptAES(msg.mid, sessionKey_first)
+            let cipher = AES.decryptAES(msg.cipher, sessionKey_first)
+            db.selectData('manager',columns=['mid,cipher'],conditions='mid='+mid).then((row) =>
+            {
+                if (row[0].cipher === cipher)
+                {
+                    if (findusername(mid, token_username))
+                    {
+                        wss.send(JSON.stringify({
+                            type: "managerLogin",
+                            success: false,
+                            reason: 'exist'
+                        }));
+                    }
+                    else
+                    {
+                        DeletekeySessionKeyValueWss(wss, session_ws)
+                        const token = generateRandomString(15);
+                        console.log(token)
+                        console.log('登录成功');
+                        token_username.set(token, mid)
+                        wss.send(JSON.stringify({
+                            type: "managerLogin",
+                            success: true,
+                            token: AES.encryptAES(token, sessionKey_first)
+                        }));
+                    }
+                }
+                else
+                {
+                    wss.send(JSON.stringify({
+                        type: "managerLogin",
+                        success: false,
+                        reason: 'wrong'
+                    }));
+                }
+            }).catch((err) =>
+            {
+                console.error(err);
+                wss.send(JSON.stringify({
+                    type: "managerLogin",
                     success: false
                 }));
             });
@@ -469,10 +517,6 @@ function keySessionKeyValueWss(wss, map)
     }
     return null;
 }
-function generateRandomString(length)
-{
-    return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length);
-}
 function findusername(username, map)
 {
     for (let [key, value] of map)
@@ -481,6 +525,12 @@ function findusername(username, map)
             return 1
     }
     return 0
+}
+
+
+function generateRandomString(length)
+{
+    return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length);
 }
 function isValidUsername(username)
 {

@@ -1,3 +1,74 @@
+document.getElementById('loginButtonManager').onclick = function (event)
+{
+  event.preventDefault();
+  const username = document.getElementById('uname').value;
+  const password = document.getElementById('psw').value;
+  if (username === '' || password === '')
+  {
+    Swal.fire({
+      icon: 'error',
+      title: '登录失败',
+      text: '用户名或密码为空',
+      timer: 2000,
+      showConfirmButton: false
+    });
+    return;
+  }
+  const hashedPassword = CryptoJS.SHA256(password).toString();
+  const message =
+  {
+    type: 'managerLogin',
+    mid: encryptAES(username, aesKey),
+    cipher: encryptAES(hashedPassword, aesKey)
+  };
+  const listener = function (event)
+  {
+    const data = JSON.parse(event.data);
+    if (data.type === 'managerLogin')
+    {
+      if (data.success === true)
+      {
+        let token = decryptAES(data.token, aesKey);
+        window.location.href = 'chat.html?token=' + token + '&username=' + username;
+      } else
+      {
+        if (data.reason === 'exist')
+        {
+          Swal.fire({
+            icon: 'error',
+            title: '登录失败',
+            text: '用户已登录',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+        else if (data.reason === 'wrong')
+        {
+          Swal.fire({
+            icon: 'error',
+            title: '登录失败',
+            text: '用户名或密码错误.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+        else
+        {
+          Swal.fire({
+            icon: 'error',
+            title: '登录失败',
+            text: '未知错误',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      }
+      socket.removeEventListener('message', listener);
+    }
+  };
+  socket.addEventListener('message', listener);
+  sendMessage(JSON.stringify(message));
+};
 document.getElementById('loginButtonUser').onclick = function (event)
 {
   event.preventDefault();
@@ -17,19 +88,19 @@ document.getElementById('loginButtonUser').onclick = function (event)
   const hashedPassword = CryptoJS.SHA256(password).toString();
   const message =
   {
-    type: 'login',
+    type: 'userLogin',
     uid: encryptAES(username, aesKey),
     cipher: encryptAES(hashedPassword, aesKey)
   };
   const listener = function (event)
   {
     const data = JSON.parse(event.data);
-    if (data.type === 'login')
+    if (data.type === 'userLogin')
     {
       if (data.success === true)
       {
         let token = decryptAES(data.token, aesKey);
-        window.location.href = 'chat.html?token=' + token + '&username=' + username;
+        window.location.href = 'userpage1.html?token=' + token ;
       } else
       {
         if (data.reason === 'exist')
@@ -144,7 +215,7 @@ function showUserRegisterPopup()
       Swal.fire({
         icon: 'success',
         title: '注册成功!',
-        timer: 4000,
+        timer: 2000,
         showConfirmButton: false
       });
     }
@@ -156,7 +227,7 @@ function showUserRegisterPopup()
         icon: 'error',
         title: '注册失败!',
         text: data.error || '用户名已存在.',
-        timer: 4000,
+        timer: 2000,
         showConfirmButton: false
       });
     }
@@ -233,7 +304,7 @@ function showManagerRegisterPopup()
       Swal.fire({
         icon: 'success',
         title: '注册成功!',
-        timer: 4000,
+        timer: 2000,
         showConfirmButton: false
       });
     }
@@ -245,7 +316,7 @@ function showManagerRegisterPopup()
         icon: 'error',
         title: '注册失败!',
         text: data.error || '用户名已存在.',
-        timer: 4000,
+        timer: 2000,
         showConfirmButton: false
       });
     }
