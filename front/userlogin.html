@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录</title>
+  <link rel="stylesheet" href="./userlogin.css">
+  <link rel="stylesheet" href="./sweetalert2.min.css">
+  <script src="./sweetalert2@11.js"></script>
+  <script src="./jsencrypt.min.js"></script>
+  <script src="./crypto-js.min.js"></script>
+  <script src="nouse.js"></script>
+  <script>let flag = true</script>
+  <script src="RSA.js"></script>
+</head>
+<body>
+  <div class="loading-page" id="loading">
+    <div class="loader"></div>
+    <p>Loading...</p>
+  </div>
+  <div class="bg" id="bg">
+    <div class="login-container">
+      <img src="header.webp" alt="Logo" class="logo">
+      <div class="container">
+        <!-- 添加一个单选按钮来选择登录类型 -->
+        <div id="loginType">
+          <input type="radio" id="userTypeUser" name="userType" value="user" checked>
+          <label for="userTypeUser">用户登录</label>
+          <input type="radio" id="userTypeAdmin" name="userType" value="admin">
+          <label for="userTypeAdmin">管理员登录</label>
+        </div>
+        
+        <div id="loginForm">
+          <label for="uname"><b>用户名</b></label>
+          <input type="text" placeholder="Enter Username" name="uname" id="uname" maxlength="15" pattern="[a-zA-Z0-9]+" required>
+          <label for="psw"><b>密码</b></label>
+          <input type="password" placeholder="Enter Password" name="psw" id="psw" minlength="8" maxlength="16" pattern="[a-zA-Z0-9!@#$%^&*()_+-=]+" required>
+          <!-- 为用户和管理员添加不同的登录按钮 -->
+          <button type="button" id="loginButtonUser">用户登录</button>
+          <button type="button" id="loginButtonAdmin" style="display:none;">管理员登录</button>
+        </div>
+        <div style="text-align:center; margin-top: 16px;">
+          <span>还没有账号？ <a href="#" id="regUser" onclick="showUserRegisterPopup()">立即注册</a></span>
+          <span>还没有账号？ <a href="#" id="regManager" onclick="showManagerRegisterPopup()">立即注册</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('userTypeUser').addEventListener('change', function() {
+    document.getElementById('loginButtonUser').style.display = 'block';
+    document.getElementById('loginButtonAdmin').style.display = 'none';
+    document.getElementById('regUser').style.display = 'block';
+    document.getElementById('regManager').style.display = 'none';
+
+  });
+
+    document.getElementById('userTypeAdmin').addEventListener('change', function() {
+    document.getElementById('loginButtonUser').style.display = 'none';
+    document.getElementById('loginButtonAdmin').style.display = 'block';
+    document.getElementById('regUser').style.display = 'none';
+    document.getElementById('regManager').style.display = 'block';
+  });
+  </script>
+  <script src="AES.js"></script>
+  <script src="userlogin.js"></script>
+  <script src="socket.js"></script>
+</body>
+</html>

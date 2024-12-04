@@ -2,3 +2,5 @@ node_modules
 *.jpg
 *.png
 *.mp4
+ffmpeg.exe
+ffprobe.exe
