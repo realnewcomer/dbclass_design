@@ -26,8 +26,8 @@
         <div id="loginType">
           <input type="radio" id="userTypeUser" name="userType" value="user" checked>
           <label for="userTypeUser">用户登录</label>
-          <input type="radio" id="userTypeAdmin" name="userType" value="admin">
-          <label for="userTypeAdmin">管理员登录</label>
+          <input type="radio" id="userTypeManager" name="userType" value="Manager">
+          <label for="userTypeManager">管理员登录</label>
         </div>
         
         <div id="loginForm">
@@ -36,12 +36,12 @@
           <label for="psw"><b>密码</b></label>
           <input type="password" placeholder="Enter Password" name="psw" id="psw" minlength="8" maxlength="16" pattern="[a-zA-Z0-9!@#$%^&*()_+-=]+" required>
           <!-- 为用户和管理员添加不同的登录按钮 -->
-          <button type="button" id="loginButtonUser">用户登录</button>
+          <button type="button" id="loginButtonUser" >用户登录</button>
           <button type="button" id="loginButtonManager" style="display:none;">管理员登录</button>
         </div>
         <div style="text-align:center; margin-top: 16px;">
-          <span>还没有账号？ <a href="#" id="regUser" onclick="showUserRegisterPopup()">立即注册</a></span>
-          <span>还没有账号？ <a href="#" id="regManager" onclick="showManagerRegisterPopup()">立即注册</a></span>
+          <span id="regUser">还没有账号？ <a href="#"  onclick="showUserRegisterPopup()" >立即注册</a></span>
+          <span id="regManager" style="display:none;">还没有账号？ <a href="#"  onclick="showManagerRegisterPopup()" >立即注册</a></span>
         </div>
       </div>
     </div>
@@ -49,15 +49,15 @@
   <script>
     document.getElementById('userTypeUser').addEventListener('change', function() {
     document.getElementById('loginButtonUser').style.display = 'block';
-    document.getElementById('loginButtonAdmin').style.display = 'none';
+    document.getElementById('loginButtonManager').style.display = 'none';
     document.getElementById('regUser').style.display = 'block';
     document.getElementById('regManager').style.display = 'none';
 
   });
 
-    document.getElementById('userTypeAdmin').addEventListener('change', function() {
+    document.getElementById('userTypeManager').addEventListener('change', function() {
     document.getElementById('loginButtonUser').style.display = 'none';
-    document.getElementById('loginButtonAdmin').style.display = 'block';
+    document.getElementById('loginButtonManager').style.display = 'block';
     document.getElementById('regUser').style.display = 'none';
     document.getElementById('regManager').style.display = 'block';
   });

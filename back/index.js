@@ -6,8 +6,10 @@ const rsa = new NodeRSA();
 const AES = require("./AES.js")
 const privateKey = loadPrivateKey();
 const session_ws = new Map();
-const token_username = new Map();
+const token_username = new Map();//用来验证该用户是否已登录
+const token_managername = new Map();//验证管理员是否登录
 const ws_username = new Map();
+const ws_managername = new Map();
 var ws = require("ws");
 var server = new ws.Server({
     port: 1234
@@ -85,7 +87,7 @@ server.on("connection", function (wss)
             {
                 if (row[0].cipher === cipher)
                 {
-                    if (findusername(mid, token_username))
+                    if (findusername(mid, token_managername))
                     {
                         wss.send(JSON.stringify({
                             type: "managerLogin",
@@ -99,7 +101,7 @@ server.on("connection", function (wss)
                         const token = generateRandomString(15);
                         console.log(token)
                         console.log('登录成功');
-                        token_username.set(token, mid)
+                        token_managername.set(token, mid)
                         wss.send(JSON.stringify({
                             type: "managerLogin",
                             success: true,
@@ -166,13 +168,13 @@ server.on("connection", function (wss)
             const sessionKey_first = keySessionKeyValueWss(wss, session_ws);
             try
             {
-                let mid = AES.decryptAES(msg.uid, sessionKey_first);
+                let mid = AES.decryptAES(msg.mid, sessionKey_first);
                 let cipher = AES.decryptAES(msg.cipher, sessionKey_first);
                 if (!isValidUsername(mid))
                 {
                     throw new Error('Invalid username or password format.');
                 }
-                db.selectData('manager',columns=['mid'],conditions='uid='+mid).then((res) =>
+                db.selectData('manager',columns=['mid'],conditions='mid='+mid).then((res) =>
                 {
                     if (res.length != 0)
                     {
@@ -181,20 +183,20 @@ server.on("connection", function (wss)
                     }
                     else
                     {
-                        return db.insertData('Users',['mid','cipher'],[mid,cipher]);
+                        return db.insertData('manager',['mid','cipher'],[mid,cipher]);
                     }
                 }).then(() =>
                 {
-                    console.log("用户" + mid + "注册成功");
+                    console.log("管理员" + mid + "注册成功");
                     wss.send(JSON.stringify({ type: "register", success: true }));
                 }).catch((err) =>
                 {
-                    console.error("注册失败:", err.message);
+                    console.error("管理员注册失败:", err.message);
                     wss.send(JSON.stringify({ type: "register", success: false }));
                 });
             } catch (err)
             {
-                console.error("解密或验证失败:", err.message);
+                console.error("管理员解密或验证失败:", err.message);
                 wss.send(JSON.stringify({ type: "register", success: false }));
             }
         }
@@ -281,6 +283,20 @@ server.on("connection", function (wss)
                         onlineUsers: onlineUsers
                     }
                     for (const key of ws_username.keys())
+                    {
+                        key.send(JSON.stringify(msg));
+                    }
+                }
+                else if (token_managername.has(tokenfirst))
+                {
+                    ws_managername.set(wss, token_username.get(tokenfirst));
+                    var onlineUsers = Array.from(ws_managername.values());
+                    const msg =
+                    {
+                        type: 'userlist',
+                        onlineUsers: onlineUsers
+                    }
+                    for (const key of ws_managername.keys())
                     {
                         key.send(JSON.stringify(msg));
                     }
@@ -467,29 +483,48 @@ server.on("connection", function (wss)
                 session_ws.delete(tmpsession);
             }
             let tmpname = ws_username.get(wss);
-            ws_username.delete(wss);
-            for (let [key, value] of token_username)
-            {
-                if (value === tmpname)
+            if (tmpname !== null){
+                ws_username.delete(wss);
+                for (let [key, value] of token_username)
                 {
-                    tmptoken = key;
-                    break;
+                    if (value === tmpname)
+                    {
+                        tmptoken = key;
+                        break;
+                    }
+                }
+                if (tmptoken !== null)
+                {
+                    token_username.delete(tmptoken);
                 }
             }
-            if (tmptoken !== null)
-            {
-                token_username.delete(tmptoken);
+            else{
+                tmpname = ws_managername.get(wss);
+                ws_managername.delete(wss);
+                for (let [key, value] of token_managername)
+                {
+                    if (value === tmpname)
+                    {
+                        tmptoken = key;
+                        break;
+                    }
+                }
+                if (tmptoken !== null)
+                {
+                    token_username.delete(tmptoken);
+                }
             }
-            var onlineUsers = Array.from(ws_username.values());
-            const msg =
-            {
-                type: 'userlist',
-                onlineUsers: onlineUsers
-            }
-            for (const key of ws_username.keys())
-            {
-                key.send(JSON.stringify(msg));
-            }
+            //获取在线用户列表才需要，目前不需要
+            // var onlineusers = array.from(ws_username.values());
+            // const msg =
+            // {
+            //     type: 'userlist',
+            //     onlineusers: onlineusers
+            // }
+            // for (const key of ws_username.keys())
+            // {
+            //     key.send(json.stringify(msg));
+            // }
         } catch (error)
         {
             console.error("Error handling close event:", error);

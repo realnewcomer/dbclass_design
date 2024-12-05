@@ -29,7 +29,7 @@ document.getElementById('loginButtonManager').onclick = function (event)
       if (data.success === true)
       {
         let token = decryptAES(data.token, aesKey);
-        window.location.href = 'chat.html?token=' + token + '&username=' + username;
+        window.location.href = 'managerpage1.html?token=' + token ;
       } else
       {
         if (data.reason === 'exist')
