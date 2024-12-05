@@ -9,7 +9,7 @@ function init()
     const msg =
     {
         type: 'firstmsg',
-        token: encryptAES(token, aesKey)
+        token: token
     }
     socket.send(JSON.stringify(msg));
     socket.addEventListener('message', function (event)

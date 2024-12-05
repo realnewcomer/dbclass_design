@@ -6,8 +6,9 @@ const rsa = new NodeRSA();
 const AES = require("./AES.js")
 const privateKey = loadPrivateKey();
 const session_ws = new Map();
+//以下四个const虽然写name，但其实是mid,uid
 const token_username = new Map();//用来验证该用户是否已登录
-const token_managername = new Map();//验证管理员是否登录
+const token_managername = new Map();//验证管理员是否登录,返回管理员name
 const ws_username = new Map();
 const ws_managername = new Map();
 var ws = require("ws");
@@ -200,6 +201,39 @@ server.on("connection", function (wss)
                 wss.send(JSON.stringify({ type: "register", success: false }));
             }
         }
+        if (msg.type === "getManagerName")
+        {
+            try
+            {
+                let token = msg.token;
+                let mid = from_token_find_managername(token,token_managername);
+                if(mid)
+                {
+                    const msg = 
+                    {
+                        type: 'managerName',
+                        isNull: false,
+                        managerName: mid,
+                        success: true
+                    }
+                    console.log(msg);
+                    wss.send(JSON.stringify(msg));
+                }
+                else
+                {
+                    const msg = 
+                    {
+                        type: 'managerName',
+                        isNull: true,
+                        success: true
+                    }
+                    wss.send(JSON.stringify(msg));
+                }
+            }catch(err){
+                console.error("根据token获取mid失败", err.message);
+                wss.send(JSON.stringify({ type: "managerName", success: false }));
+            }
+        }
         if (msg.type === "chatmsg")
         {
             try
@@ -272,7 +306,7 @@ server.on("connection", function (wss)
         {
             try
             {
-                let tokenfirst = AES.decryptAES(msg.token, keySessionKeyValueWss(wss, session_ws));
+                let tokenfirst = msg.token;
                 if (token_username.has(tokenfirst))
                 {
                     ws_username.set(wss, token_username.get(tokenfirst));
@@ -289,7 +323,7 @@ server.on("connection", function (wss)
                 }
                 else if (token_managername.has(tokenfirst))
                 {
-                    ws_managername.set(wss, token_username.get(tokenfirst));
+                    ws_managername.set(wss, token_managername.get(tokenfirst));
                     var onlineUsers = Array.from(ws_managername.values());
                     const msg =
                     {
@@ -483,7 +517,8 @@ server.on("connection", function (wss)
                 session_ws.delete(tmpsession);
             }
             let tmpname = ws_username.get(wss);
-            if (tmpname !== null){
+            console.log(tmpname);
+            if (typeof tmpname !== 'undefined'){
                 ws_username.delete(wss);
                 for (let [key, value] of token_username)
                 {
@@ -500,6 +535,7 @@ server.on("connection", function (wss)
             }
             else{
                 tmpname = ws_managername.get(wss);
+                console.log(tmpname);
                 ws_managername.delete(wss);
                 for (let [key, value] of token_managername)
                 {
@@ -511,7 +547,8 @@ server.on("connection", function (wss)
                 }
                 if (tmptoken !== null)
                 {
-                    token_username.delete(tmptoken);
+                    token_managername.delete(tmptoken);
+                    console.log('管理员已断开')
                 }
             }
             //获取在线用户列表才需要，目前不需要
@@ -561,7 +598,17 @@ function findusername(username, map)
     }
     return 0
 }
-
+function from_token_find_managername(token,map)
+{
+    for (let [key, value] of map)
+    {
+        if (token === key)
+            return value;
+        else
+            return 0
+    }
+    return 0
+}
 
 function generateRandomString(length)
 {
