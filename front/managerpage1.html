@@ -2,125 +2,102 @@
 <html>
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title></title>
-	<meta name="Keywords" content="关键词,关键词">
-	<meta name="description" content="">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title></title>
+    <meta name="Keywords" content="关键词,关键词">
+    <meta name="description" content="">
     <link rel="stylesheet" href="./managerpage1.css">
 </head>
 
 <body>
-	<div class="tz_content">
-		<div class="t_left">
-			<div class="l_logo"></div>
-			<div class="l_nav">
-				<ul>
-					<li class="active">
-						<a href="">
-							<i class="icon_1"></i>
-							<span>首页</span>
-						</a>
-					</li>
-					<li>
-						<a href="student.html">
-							<i class="icon_1"></i>
-							<span>用户信息</span>
-						</a>
-					</li>
+    <div class="tz_content">
+        <div class="t_left">
+            <div class="l_logo"></div>
+            <div class="l_nav">
+                <ul>
+                    <li class="active">
+                        <a href="#" onclick="showIndex()">
+                            <i class="icon_1"></i>
+                            <span>首页</span>
+                        </a>
+                    </li>
                     <li>
-						<a href="student.html">
-							<i class="icon_1"></i>
-							<span>管理员信息</span>
-						</a>
-					</li>
+                        <a href="#" onclick="showUserInfo()">
+                            <i class="icon_1"></i>
+                            <span>用户信息</span>
+                        </a>
+                    </li>
                     <li>
-						<a href="student.html">
-							<i class="icon_1"></i>
-							<span>课程信息</span>
-						</a>
-					</li>
+                        <a href="#" onclick="showManagerInfo()">
+                            <i class="icon_1"></i>
+                            <span>管理员信息</span>
+                        </a>
+                    </li>
                     <li>
-						<a href="student.html">
-							<i class="icon_1"></i>
-							<span>用户上传资源审核</span>
-						</a>
-					</li>
+                        <a href="#" onclick="showCourseInfo()">
+                            <i class="icon_1"></i>
+                            <span>课程信息</span>
+                        </a>
+                    </li>
                     <li>
-						<a href="student.html">
-							<i class="icon_1"></i>
-							<span>系统公告</span>
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-		<div class="t_header">
-			<div class="h_nav">
-				<ul>
-					<li>
-						<a href="#" class="h_sel">
-							<i class="h_icon1"></i>
-							<span>首页</span>
-						</a>
-					</li>
-					<li>
-						<a href="#">
-							<i class="h_icon2"></i>
-							<span>界面管理</span>
-						</a>
-					</li>
-					<li>
-						<a href="#">
-							<i class="h_icon8"></i>
-							<span>个人中心</span>
-						</a>
-					</li>
-				</ul>
-			</div>
-			<div class="h_info">
+                        <a href="#" onclick="showResourceAudit()">
+                            <i class="icon_1"></i>
+                            <span>用户上传资源审核</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showNotice()">
+                            <i class="icon_1"></i>
+                            <span>系统公告</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="t_header">
+            <div class="h_nav">
+                <ul>
+                    <li>
+                        <a href="#" class="h_sel">
+                            <i class="h_icon1"></i>
+                            <span>首页</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="h_icon2"></i>
+                            <span>界面管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="h_icon8"></i>
+                            <span>个人中心</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="h_info">
                 <div class="h_user">当前管理员mid：<span id="managerName"></span> , 身份：系统管理员</div>
                 <div class="h_out">
-                    <a href="javascript:void(0)" onclick="logout()">
+                    <a onclick="logout()">
                         <span>退出</span>
-                        <i></i>
                     </a>
                 </div>
             </div>
-			<!--end h_info-->
+            <!--end h_info-->
 
-		</div>
-		<!--end t_header-->
+        </div>
+        <!--end t_header-->
 
 
-		<!--t_right start-->
-		<div class="t_right">
-
-			<!--r_location start-->
-			<div class="r_location">
-				<i></i>
-				<p>您当前所在位置：首页 > 后台中心</p>
-			</div>
-			<!--end r_location-->
-
-			<!--r_message start-->
-			<div class="r_message">
-				<div class="m_list m_1">
-					<div class="m_pic"></div>
-					<div class="m_desc">
-						<span>2450</span>
-						<p>所有用户数</p>
-					</div>
-				</div>
-				<div class="clear"></div>
-                <script src="managerpage1.js"></script>
-                <script src="socketpage.js"></script>
-			</div>
-			<!--end r_message-->
-
-		</div>
-		<!--end t_right-->
-
-	</div>
+        <!--t_right start-->
+        <div class="t_right">
+        </div>
+        <!--end t_right-->
+        <script src="managerpage1.js"></script>
+        <script src="socketpage.js"></script>
+    </div>
 
 
 </body>

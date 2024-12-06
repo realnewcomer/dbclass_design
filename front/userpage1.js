@@ -17,7 +17,7 @@ function init()
         const data = JSON.parse(event.data);
         if (data.type === 'unlogin')
         {
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
         }
     });
 }
