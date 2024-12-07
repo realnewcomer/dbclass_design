@@ -234,6 +234,14 @@ server.on("connection", function (wss)
                 wss.send(JSON.stringify({ type: "managerName", success: false }));
             }
         }
+        if (msg.type === "getUserInfo")
+        {
+            try{
+                
+            }catch(err){
+
+            }
+        }
         if (msg.type === "chatmsg")
         {
             try
