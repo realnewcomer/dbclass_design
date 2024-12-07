@@ -237,9 +237,56 @@ server.on("connection", function (wss)
         if (msg.type === "getUserInfo")
         {
             try{
-                
+                db.selectData('Users',columns=['uid','name','birthday','gender']).then((res) =>
+                {
+                    const msg = {
+                        type: 'userInfo',
+                        success: true,
+                        users: res
+                    }
+                    wss.send(JSON.stringify(msg));
+                }).then(() =>
+                {
+                    console.log("获取用户信息成功");
+                }).catch((err) =>
+                {
+                    console.error("获取用户信息失败:", err.message);
+                    const msg = {
+                        type: 'userInfo',
+                        success: false,
+                    }
+                    wss.send(JSON.stringify(msg));
+                });
             }catch(err){
-
+                console.error("获取用户信息失败", err.message);
+                wss.send(JSON.stringify({ type: "userInfo", success: false }));
+            }
+        }
+        if (msg.type === "deleteUser")
+        {
+            try{
+                db.deleteData('Users',"uid='"+msg.uid+"'").then((res) =>
+                {
+                    const msg = {
+                        type: 'deleteUser',
+                        success: true,
+                    }
+                    wss.send(JSON.stringify(msg));
+                }).then(() =>
+                {
+                    console.log("删除用户信息成功");
+                }).catch((err) =>
+                {
+                    console.error("删除用户信息失败:", err.message);
+                    const msg = {
+                        type: 'deleteUser',
+                        success: false,
+                    }
+                    wss.send(JSON.stringify(msg));
+                });
+            }catch(err){
+                console.error("删除用户信息失败", err.message);
+                wss.send(JSON.stringify({ type: "deleteUser", success: false }));
             }
         }
         if (msg.type === "chatmsg")

@@ -124,7 +124,6 @@ async function insertData(tableName, columns, values) {
     
     // 构建插入语句，例如：'INSERT INTO example_table (name, age) VALUES ($1,$2)'
     const sql = `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES (${placeholders})`;
-    
     try {
         // 执行插入操作
         await client.query(sql, values);
@@ -168,9 +167,9 @@ async function selectData(tableName, columns = ['*'], conditions = '', orderBy =
         sql += ` LIMIT ${limit}`;
     }
     try {
+        
         // 执行查询操作
         const res = await client.query(sql);
-        console.log('Data:', res.rows);
         return res.rows;
     } catch (err) {
         // 如果发生错误，打印错误信息
@@ -189,9 +188,9 @@ async function selectData(tableName, columns = ['*'], conditions = '', orderBy =
 //     await connectDb();
 //     let uid='763437171';
 //     let cipher='123456'
-//     await insertData('Users',['uid','cipher'],[uid,cipher]);
-//     await selectData('Users',columns=['uid,cipher'],conditions='uid=763437171').then((res)=>{
-//         console.log(res[0].cipher);
+//     // await insertData('Users',['uid','cipher'],[uid,cipher]);
+//     await selectData('Users',columns=['uid','name','birthday','gender']).then((res)=>{
+//         console.log(res);
     
 //     });
 // }
@@ -225,19 +224,30 @@ async function updateData(tableName, updateData, condition) {
 
 
 //删除数据
-async function deleteData(tableName, condition, params) {
+async function deleteData(tableName, condition) {
     // 构建删除数据的 SQL 语句
     // 注意：这里的 condition 应该是一个字符串，例如 "id = $1"
     // params 是一个数组，包含了 condition 中占位符 $1,$2, ... 对应的值
-    const sql = `DELETE FROM ${tableName} WHERE${condition}`;
-
+    const sql = `DELETE from ${tableName} WHERE ${condition}`;
     try {
-        await client.query(sql, params);
+        await client.query(sql);
         console.log('Data deleted successfully');
     } catch (err) {
         console.error('Error deleting data', err.stack);
     }
 }
+
+// async function main() {
+//     await connectDb();
+//     await insertData('Users',['uid','cipher'],['000000000','000000000']);
+//     await insertData('Users',['uid','cipher'],['000000001','000000000']);
+//     await insertData('Users',['uid','cipher'],['000000002','000000000']);
+//     await insertData('Users',['uid','cipher'],['000000003','000000000']);
+//     await deleteData('Users',"uid='000000003'").then((res)=>{
+//         console.log(res);
+//     });
+// }
+// main().catch(console.error);
 // 使用示例：
 // 删除 id 为 10 的记录
 // 请确保 condition 是安全的，避免 SQL 注入
