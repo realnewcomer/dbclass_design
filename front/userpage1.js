@@ -21,3 +21,8 @@ function init()
         }
     });
 }
+// 点击按钮时的处理函数
+function handleClick() {
+    const responseMessage = document.getElementById('response-message');
+    responseMessage.textContent = '按钮已被点击！';
+}
