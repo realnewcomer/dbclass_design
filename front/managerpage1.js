@@ -17,6 +17,19 @@ function init() {
         }
     });
 }
+document.addEventListener('DOMContentLoaded', function() {
+    const navItems = document.querySelectorAll('.l_nav ul li');
+
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // 移除所有li的active类
+            navItems.forEach(navItem => navItem.classList.remove('active'));
+            // 为当前点击的li添加active类
+            this.classList.add('active');
+        });
+    });
+});
+
 var mid;
 // 设置当前用户名
 function setCurrentUsername() {
@@ -77,7 +90,6 @@ function showNotice() {
     // 将公告容器添加到t_right中
     tRightDiv.appendChild(noticeDiv);
 }
-// showUserInfo函数保持不变
 function showUserInfo() {
     // 获取用户数据
     const msg = {
@@ -149,7 +161,6 @@ function showUserInfo() {
     socket.send(JSON.stringify(msg));
 
 }
-
 // 假设的删除用户函数，用于与后端交互
 function deleteUser(userId, rowElement) {
     const message =
@@ -184,4 +195,71 @@ function deleteUser(userId, rowElement) {
     };
     socket.addEventListener('message', listener);
     socket.send(JSON.stringify(message));
+}
+function showSelfInfo(){
+    // 假设这是从后端返回的个人信息数据
+    const msg = {
+        type: 'getManagerInfo',
+        mid: mid
+    }
+    let userData ={};
+    const listener = function (event) {
+        const data = JSON.parse(event.data);
+        if (data.type === 'managerInfo') {
+            if (data.success === true) {
+                userData = {
+                    mid: data.mid,
+                    name: data.name,
+                    gender: data.gender
+                };
+            }
+            else {
+                userData = {
+                    mid: 'error',
+                    name: 'error',
+                    gender: 'error'
+                }
+            }
+            const infoTable = document.createElement('table');
+            infoTable.className = 'user-info-table';
+            infoTable.innerHTML = `
+                <tr><th>属性</th><th>值</th></tr>
+                <tr><td>MID</td><td>${userData.mid}</td></tr>
+                <tr><td>昵称</td><td>${userData.name}</td></tr>
+                <tr><td>性别</td><td>${userData.gender}</td></tr>
+            `;
+        
+            // 创建修改个人信息的表格
+            const editTable = document.createElement('table');
+            editTable.className = 'user-edit-table';
+            editTable.innerHTML = `
+                <tr><th>属性</th><th>值</th></tr>
+                <tr><td>MID</td><td><input type="text" id="midInput" value="${userData.mid}"></td></tr>
+                <tr><td>昵称</td><td><input type="text" id="nameInput" value="${userData.name}"></td></tr>
+                <tr><td>性别</td><td><input type="text" id="genderInput" value="${userData.gender}"></td></tr>
+                <tr><td colspan="2"><button onclick="submitEdits()">提交修改</button></td></tr>
+            `;
+        
+            // 将表格添加到页面中
+            const tRightDiv = document.querySelector('.t_right');
+            tRightDiv.innerHTML = '';
+            tRightDiv.appendChild(infoTable);
+            tRightDiv.appendChild(editTable);
+            socket.removeEventListener('message', listener);
+        }
+    };
+    socket.addEventListener('message', listener);
+    socket.send(JSON.stringify(msg));
+    // 创建显示个人信息的表格
+   
+}
+function submitEdits() {
+    const mid = document.getElementById('midInput').value;
+    const name = document.getElementById('nameInput').value;
+    const gender = document.getElementById('genderInput').value;
+
+    // 这里可以添加代码将修改后的数据发送到后端
+    console.log('提交的数据:', { name, age, email });
+    // 示例：调用后端API更新数据
+    // updateBackendData({ name, age, email });
 }

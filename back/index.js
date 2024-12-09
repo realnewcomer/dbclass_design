@@ -289,74 +289,81 @@ server.on("connection", function (wss)
                 wss.send(JSON.stringify({ type: "deleteUser", success: false }));
             }
         }
-        if (msg.type === "chatmsg")
-        {
-            try
-            {
-                let message = AES.decryptAES(msg.message, keySessionKeyValueWss(wss, session_ws));
-                let tempname = ws_username.get(wss);
-                for (const [key, value] of session_ws)
-                {
-                    let tempws = value;
-                    let tempkey = key;
-                    const msg =
-                    {
-                        type: 'chatmsg',
-                        username: AES.encryptAES(tempname, tempkey),
-                        message: AES.encryptAES(message, tempkey)
-                    }
-                    if (tempws.readyState === ws.OPEN)
-                    {
-                        try
-                        {
-                            tempws.send(JSON.stringify(msg));
-                        }
-                        catch (error)
-                        {
-                            console.error('Error while sending message:', error);
-                        }
-                    }
-                }
-            }
-            catch (error)
-            {
-                console.error('error chatmsg', error);
+        if (msg.type === "getManagerInfo"){
+            try{
+                db.selectData('manager',columns=['mid,name,'],conditions='mid='+mid)
+            }catch(err){
+
             }
         }
-        if (msg.type === 'image')
-        {
-            try
-            {
-                let message = AES.decryptAES(msg.imagedata, keySessionKeyValueWss(wss, session_ws));
-                let tempname = ws_username.get(wss);
-                for (const [key, value] of session_ws)
-                {
-                    let tempws = value;
-                    let tempkey = key;
-                    const msg =
-                    {
-                        type: 'image',
-                        username: AES.encryptAES(tempname, tempkey),
-                        message: AES.encryptAES(message, tempkey)
-                    }
-                    if (tempws.readyState === ws.OPEN)
-                    {
-                        try
-                        {
-                            tempws.send(JSON.stringify(msg));
-                        }
-                        catch (error)
-                        {
-                            console.error('Error while sending image:', error);
-                        }
-                    }
-                }
-            }
-            catch (error)
-            {
-                console.error('error image', error);
-            }
-        }
+        // if (msg.type === "chatmsg")
+        // {
+        //     try
+        //     {
+        //         let message = AES.decryptAES(msg.message, keySessionKeyValueWss(wss, session_ws));
+        //         let tempname = ws_username.get(wss);
+        //         for (const [key, value] of session_ws)
+        //         {
+        //             let tempws = value;
+        //             let tempkey = key;
+        //             const msg =
+        //             {
+        //                 type: 'chatmsg',
+        //                 username: AES.encryptAES(tempname, tempkey),
+        //                 message: AES.encryptAES(message, tempkey)
+        //             }
+        //             if (tempws.readyState === ws.OPEN)
+        //             {
+        //                 try
+        //                 {
+        //                     tempws.send(JSON.stringify(msg));
+        //                 }
+        //                 catch (error)
+        //                 {
+        //                     console.error('Error while sending message:', error);
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     catch (error)
+        //     {
+        //         console.error('error chatmsg', error);
+        //     }
+        // }
+        // if (msg.type === 'image')
+        // {
+        //     try
+        //     {
+        //         let message = AES.decryptAES(msg.imagedata, keySessionKeyValueWss(wss, session_ws));
+        //         let tempname = ws_username.get(wss);
+        //         for (const [key, value] of session_ws)
+        //         {
+        //             let tempws = value;
+        //             let tempkey = key;
+        //             const msg =
+        //             {
+        //                 type: 'image',
+        //                 username: AES.encryptAES(tempname, tempkey),
+        //                 message: AES.encryptAES(message, tempkey)
+        //             }
+        //             if (tempws.readyState === ws.OPEN)
+        //             {
+        //                 try
+        //                 {
+        //                     tempws.send(JSON.stringify(msg));
+        //                 }
+        //                 catch (error)
+        //                 {
+        //                     console.error('Error while sending image:', error);
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     catch (error)
+        //     {
+        //         console.error('error image', error);
+        //     }
+        // }
         if (msg.type === 'firstmsg')
         {
             try
@@ -426,131 +433,131 @@ server.on("connection", function (wss)
                 console.error('error aes', error);
             }
         }
-        if (msg.type === 'video')
-        {
-            let message = AES.decryptAES(msg.message, keySessionKeyValueWss(wss, session_ws));
-            let tempname = ws_username.get(wss);
-            try
-            {
-                if (message === 'EOF')
-                {
-                    const videoData = Buffer.concat(videoChunks);
-                    fs.writeFile('received_video.mp4', videoData, function (err)
-                    {
-                        if (err)
-                        {
-                            console.error('写入视频文件时出错：', err);
-                        }
-                        else
-                        {
-                            console.log('视频文件已接收并保存。');
-                            fs.readFile('received_video.mp4', function (err, data)
-                            {
-                                if (err)
-                                {
-                                    console.error('读取视频文件时出错：', err);
-                                }
-                                else
-                                {
-                                    for (const [key, value] of session_ws)
-                                    {
-                                        let tempws = value;
-                                        let tempkey = key;
-                                        const msg =
-                                        {
-                                            type: 'video',
-                                            username: AES.encryptAES(tempname, tempkey),
-                                            message: AES.encryptAES(arrayBufferToBase64(data), tempkey)
-                                        }
-                                        extractVideoCover()
-                                            .then(coverBase64 =>
-                                                {
-                                                if (tempws.readyState === ws.OPEN)
-                                                {
-                                                    try
-                                                    {
-                                                        msg.cover = AES.encryptAES(coverBase64, tempkey);
-                                                        tempws.send(JSON.stringify(msg));
-                                                    }
-                                                    catch (error)
-                                                    {
-                                                        console.error('Error while sending image:', error);
-                                                    }
-                                                }
-                                            })
-                                            .catch(error =>
-                                                {
-                                                console.error('Error extracting video cover:', error);
-                                            });
-                                    }
-                                }
-                            });
-                        }
-                    });
-                    videoChunks = [];
-                } else
-                {
-                    videoChunks.push(new Uint8Array(base64ToArrayBuffer(message)));
-                }
-            }
-            catch (error)
-            {
-                console.error('error video', error);
-            }
-        }
-        if (msg.type === 'music')
-        {
-            let message = AES.decryptAES(msg.message, keySessionKeyValueWss(wss, session_ws));
-            let tempname = ws_username.get(wss);
-            try
-            {
-                if (message === 'EOF')
-                {
-                    const musicData = Buffer.concat(musicChunks);
-                    fs.writeFile('received_music.mp3', musicData, async function (err)
-                    {
-                        if (err)
-                        {
-                            console.error('写入音乐文件时出错：', err);
-                        } else
-                        {
-                            for (const [key, value] of session_ws)
-                            {
-                                let tempws = value;
-                                let tempkey = key;
-                                const msg =
-                                {
-                                    type: 'music',
-                                    username: AES.encryptAES(tempname, tempkey),
-                                    message: AES.encryptAES(arrayBufferToBase64(musicData), tempkey)
-                                }
-                                const base64 = await getMusicCoverBase64();
-                                if (tempws.readyState === ws.OPEN)
-                                {
-                                    try
-                                    {
-                                        msg.cover = AES.encryptAES(base64, tempkey);
-                                        tempws.send(JSON.stringify(msg));
-                                    }
-                                    catch (error)
-                                    {
-                                        console.error('Error while sending image:', error);
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    musicChunks = [];
-                } else
-                {
-                    musicChunks.push(new Uint8Array(base64ToArrayBuffer(message)));
-                }
-            }
-            catch (error)
-            {
-                console.error('error music', error);
-            }
-        }
+        // if (msg.type === 'video')
+        // {
+        //     let message = AES.decryptAES(msg.message, keySessionKeyValueWss(wss, session_ws));
+        //     let tempname = ws_username.get(wss);
+        //     try
+        //     {
+        //         if (message === 'EOF')
+        //         {
+        //             const videoData = Buffer.concat(videoChunks);
+        //             fs.writeFile('received_video.mp4', videoData, function (err)
+        //             {
+        //                 if (err)
+        //                 {
+        //                     console.error('写入视频文件时出错：', err);
+        //                 }
+        //                 else
+        //                 {
+        //                     console.log('视频文件已接收并保存。');
+        //                     fs.readFile('received_video.mp4', function (err, data)
+        //                     {
+        //                         if (err)
+        //                         {
+        //                             console.error('读取视频文件时出错：', err);
+        //                         }
+        //                         else
+        //                         {
+        //                             for (const [key, value] of session_ws)
+        //                             {
+        //                                 let tempws = value;
+        //                                 let tempkey = key;
+        //                                 const msg =
+        //                                 {
+        //                                     type: 'video',
+        //                                     username: AES.encryptAES(tempname, tempkey),
+        //                                     message: AES.encryptAES(arrayBufferToBase64(data), tempkey)
+        //                                 }
+        //                                 extractVideoCover()
+        //                                     .then(coverBase64 =>
+        //                                         {
+        //                                         if (tempws.readyState === ws.OPEN)
+        //                                         {
+        //                                             try
+        //                                             {
+        //                                                 msg.cover = AES.encryptAES(coverBase64, tempkey);
+        //                                                 tempws.send(JSON.stringify(msg));
+        //                                             }
+        //                                             catch (error)
+        //                                             {
+        //                                                 console.error('Error while sending image:', error);
+        //                                             }
+        //                                         }
+        //                                     })
+        //                                     .catch(error =>
+        //                                         {
+        //                                         console.error('Error extracting video cover:', error);
+        //                                     });
+        //                             }
+        //                         }
+        //                     });
+        //                 }
+        //             });
+        //             videoChunks = [];
+        //         } else
+        //         {
+        //             videoChunks.push(new Uint8Array(base64ToArrayBuffer(message)));
+        //         }
+        //     }
+        //     catch (error)
+        //     {
+        //         console.error('error video', error);
+        //     }
+        // }
+        // if (msg.type === 'music')
+        // {
+        //     let message = AES.decryptAES(msg.message, keySessionKeyValueWss(wss, session_ws));
+        //     let tempname = ws_username.get(wss);
+        //     try
+        //     {
+        //         if (message === 'EOF')
+        //         {
+        //             const musicData = Buffer.concat(musicChunks);
+        //             fs.writeFile('received_music.mp3', musicData, async function (err)
+        //             {
+        //                 if (err)
+        //                 {
+        //                     console.error('写入音乐文件时出错：', err);
+        //                 } else
+        //                 {
+        //                     for (const [key, value] of session_ws)
+        //                     {
+        //                         let tempws = value;
+        //                         let tempkey = key;
+        //                         const msg =
+        //                         {
+        //                             type: 'music',
+        //                             username: AES.encryptAES(tempname, tempkey),
+        //                             message: AES.encryptAES(arrayBufferToBase64(musicData), tempkey)
+        //                         }
+        //                         const base64 = await getMusicCoverBase64();
+        //                         if (tempws.readyState === ws.OPEN)
+        //                         {
+        //                             try
+        //                             {
+        //                                 msg.cover = AES.encryptAES(base64, tempkey);
+        //                                 tempws.send(JSON.stringify(msg));
+        //                             }
+        //                             catch (error)
+        //                             {
+        //                                 console.error('Error while sending image:', error);
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //             });
+        //             musicChunks = [];
+        //         } else
+        //         {
+        //             musicChunks.push(new Uint8Array(base64ToArrayBuffer(message)));
+        //         }
+        //     }
+        //     catch (error)
+        //     {
+        //         console.error('error music', error);
+        //     }
+        // }
     });
     wss.on('close', function close()
     {
