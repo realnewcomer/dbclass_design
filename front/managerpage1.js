@@ -17,19 +17,6 @@ function init() {
         }
     });
 }
-document.addEventListener('DOMContentLoaded', function() {
-    const navItems = document.querySelectorAll('.l_nav ul li');
-
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // 移除所有li的active类
-            navItems.forEach(navItem => navItem.classList.remove('active'));
-            // 为当前点击的li添加active类
-            this.classList.add('active');
-        });
-    });
-});
-
 var mid;
 // 设置当前用户名
 function setCurrentUsername() {
@@ -90,6 +77,7 @@ function showNotice() {
     // 将公告容器添加到t_right中
     tRightDiv.appendChild(noticeDiv);
 }
+// showUserInfo函数保持不变
 function showUserInfo() {
     // 获取用户数据
     const msg = {
@@ -161,6 +149,7 @@ function showUserInfo() {
     socket.send(JSON.stringify(msg));
 
 }
+
 // 假设的删除用户函数，用于与后端交互
 function deleteUser(userId, rowElement) {
     const message =
