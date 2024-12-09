@@ -21,8 +21,17 @@ function init()
         }
     });
 }
-// 点击按钮时的处理函数
-function handleClick() {
-    const responseMessage = document.getElementById('response-message');
-    responseMessage.textContent = '按钮已被点击！';
-}
+
+// JavaScript code to handle click events on navigation links
+document.addEventListener('DOMContentLoaded', function() {
+    var navLinks = document.querySelectorAll('.navbar a');
+  
+    navLinks.forEach(function(link) {
+      link.addEventListener('click', function(event) {
+        event.preventDefault();
+        // Implement your click function here
+        console.log('Navigation link clicked:', link.textContent);
+      });
+    });
+  });
+  
