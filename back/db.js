@@ -8,7 +8,7 @@ const client = new Client({
     port: 5432,
     ssl: false,
 })
-
+//a
 // 连接数据库
 async function connectDb() {
     try {
