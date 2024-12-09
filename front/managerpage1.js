@@ -257,7 +257,11 @@ function submitEdits() {
     const mid = document.getElementById('midInput').value;
     const name = document.getElementById('nameInput').value;
     const gender = document.getElementById('genderInput').value;
-
+    const msg = {
+        mid:mid,
+        name:name,
+        gender:gender
+    }
     // 这里可以添加代码将修改后的数据发送到后端
     console.log('提交的数据:', { name, age, email });
     // 示例：调用后端API更新数据

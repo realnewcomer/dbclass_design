@@ -291,9 +291,29 @@ server.on("connection", function (wss)
         }
         if (msg.type === "getManagerInfo"){
             try{
-                db.selectData('manager',columns=['mid,name,'],conditions='mid='+mid)
+                db.selectData('manager',columns=['mid,name,gender'],conditions='mid='+msg.mid).then((res)=>{
+                    const msg = {
+                        type: "managerInfo",
+                        mid: res[0].mid,
+                        name: res[0].name,
+                        gender: res[0].gender,
+                        success: true
+                    }
+                    wss.send(JSON.stringify(msg));
+                }).then(()=>{
+                    console.log("发送管理员信息成功");
+                }).catch((err) =>
+                {
+                    console.error("发送管理员信息信息失败:", err.message);
+                    const msg = {
+                        type: 'managerInfo',
+                        success: false,
+                    }
+                    wss.send(JSON.stringify(msg));
+                });
             }catch(err){
-
+                console.error("发送管理员信息失败", err.message);
+                wss.send(JSON.stringify({ type: "managerInfo", success: false }));
             }
         }
         // if (msg.type === "chatmsg")

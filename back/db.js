@@ -186,13 +186,12 @@ async function selectData(tableName, columns = ['*'], conditions = '', orderBy =
 
 // async function main() {
 //     await connectDb();
-//     let uid='763437171';
-//     let cipher='123456'
 //     // await insertData('Users',['uid','cipher'],[uid,cipher]);
-//     await selectData('Users',columns=['uid','name','birthday','gender']).then((res)=>{
-//         console.log(res);
-    
+//     await selectData('manager',columns=['mid,name,gender'],conditions='mid='+763437171).then((res)=>{
+//         console.log(res[0].mid);
 //     });
+    
+    
 // }
 // main().catch(console.error);
 
