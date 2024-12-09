@@ -258,12 +258,59 @@ function submitEdits() {
     const name = document.getElementById('nameInput').value;
     const gender = document.getElementById('genderInput').value;
     const msg = {
-        type: "",
+        type: "changeManagerInfo",
         mid:mid,
         name:name,
         gender:gender
     }
-
+    let userData ={};
+    const listener = function (event) {
+        const data = JSON.parse(event.data);
+        if (data.type === 'changeManagerInfo') {
+            if (data.success === true) {
+                userData = {
+                    mid: mid,
+                    name: name,
+                    gender: gender
+                };
+            }
+            else {
+                userData = {
+                    mid: 'error',
+                    name: 'error',
+                    gender: 'error'
+                }
+            }
+            const infoTable = document.createElement('table');
+            infoTable.className = 'user-info-table';
+            infoTable.innerHTML = `
+                <tr><th>属性</th><th>值</th></tr>
+                <tr><td>MID</td><td>${userData.mid}</td></tr>
+                <tr><td>昵称</td><td>${userData.name}</td></tr>
+                <tr><td>性别</td><td>${userData.gender}</td></tr>
+            `;
+        
+            // 创建修改个人信息的表格
+            const editTable = document.createElement('table');
+            editTable.className = 'user-edit-table';
+            editTable.innerHTML = `
+                <tr><th>属性</th><th>值</th></tr>
+                <tr><td>MID</td><td><input type="text" id="midInput" value="${userData.mid}"></td></tr>
+                <tr><td>昵称</td><td><input type="text" id="nameInput" value="${userData.name}"></td></tr>
+                <tr><td>性别</td><td><input type="text" id="genderInput" value="${userData.gender}"></td></tr>
+                <tr><td colspan="2"><button onclick="submitEdits()">提交修改</button></td></tr>
+            `;
+        
+            // 将表格添加到页面中
+            const tRightDiv = document.querySelector('.t_right');
+            tRightDiv.innerHTML = '';
+            tRightDiv.appendChild(infoTable);
+            tRightDiv.appendChild(editTable);
+            socket.removeEventListener('message', listener);
+        }
+    };
+    socket.addEventListener('message', listener);
+    socket.send(JSON.stringify(msg));
     // 这里可以添加代码将修改后的数据发送到后端
     console.log('提交的数据:', { name, age, email });
     // 示例：调用后端API更新数据

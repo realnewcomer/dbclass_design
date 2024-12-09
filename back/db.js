@@ -198,25 +198,32 @@ async function selectData(tableName, columns = ['*'], conditions = '', orderBy =
 
 //更新数据
 async function updateData(tableName, updateData, condition) {
-    // 构建列和值的占位符字符串，例如：'name = $1, age =$2'
-    const updateSet = Object.keys(updateData).map((key, index) => `${key} =$${index + 1}`).join(', ');
-    
-    // 构建条件占位符字符串，例如：'id = $3'
-    const conditionStr = Object.keys(condition).map((key, index) => `${key} =$${Object.keys(updateData).length + index + 1}`).join(' AND ');
-    
-    // 构建完整的 SQL 更新语句
-    const sql = `UPDATE ${tableName} SET${updateSet} WHERE ${conditionStr}`;
-    
-    // 合并更新数据和条件数据，以形成最终的值数组
-    const values = [...Object.values(updateData), ...Object.values(condition)];
+    // 构建SET部分
+    const setClauses = Object.keys(updateData).map((key, index) => `${key} =$${index + 1}`).join(', ');
+
+    // 构建WHERE部分，使用命名参数
+    const whereClauses = Object.keys(condition).map((key, index) => `${key} =$${index + Object.keys(updateData).length + 1}`).join(' AND ');
+
+    // 构建完整的SQL语句
+    const sql = `UPDATE ${tableName} SET ${setClauses} WHERE ${whereClauses}`;
+    // 获取更新数据的值和条件的值
+    const values = Object.values(updateData).concat(Object.values(condition));
 
     try {
-        await client.query(sql, values);
-        console.log('Data updated successfully');
-    } catch (err) {
-        console.error('Error updating data', err.stack);
+        // 执行SQL语句
+        const result = await client.query(sql, values);
+        return result; // 返回结果，通常包含受影响的行数等信息
+    } catch (error) {
+        throw error;
     }
 }
+// async function main() {
+//     await connectDb();
+//     await updateData('manager',{name:'apard',gender:'男'},{mid:'763437171'}).then((res)=>{
+//         console.log(res.rowCount);
+//     });    
+// }
+// main().catch(console.error);
 // 使用示例：
 // 假设我们要更新表名为 `users` 的数据，将 `name` 更新为 'Alice'，`age` 更新为 30，条件是 `id` 等于 1
 //updateData('users', { name: 'Alice', age: 30 }, { id: 1 });

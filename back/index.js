@@ -316,6 +316,42 @@ server.on("connection", function (wss)
                 wss.send(JSON.stringify({ type: "managerInfo", success: false }));
             }
         }
+        if (msg.type === "changeManagerInfo"){
+            let mid = msg.mid;
+            let name = msg.name;
+            let gender = msg.gender;
+            try{
+                db.updateData('manager',{name:name,gender:gender},{mid:mid}).then((res)=>{
+                    if(res.rowCount === 1){
+                        const msg = {
+                            type:"changeManagerInfo",
+                            success: true
+                        }
+                        wss.send(JSON.stringify(msg));
+                    }else{
+                        const msg = {
+                            type:"changeManagerInfo",
+                            success: false
+                        }
+                        wss.send(JSON.stringify(msg));
+                    }
+                }).then(() =>
+                {
+                    console.log("修改管理员信息成功");
+                }).catch((err) =>
+                {
+                    console.error("修改管理员信息失败:", err.message);
+                    const msg = {
+                        type: 'changeManagerInfouserInfo',
+                        success: false,
+                    }
+                    wss.send(JSON.stringify(msg));
+                });
+            }catch(err){
+                console.error("修改管理员信息失败", err.message);
+                wss.send(JSON.stringify({ type: "uschangeManagerInfoerInfo", success: false }));
+            }
+        }
         // if (msg.type === "chatmsg")
         // {
         //     try
