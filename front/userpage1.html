@@ -3,16 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>点击事件示例</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>userpage</title>
+    <link rel="stylesheet" href="userpage1.css">
+    <link rel="stylesheet" href="./sweetalert2.min.css">
+    <script src="./sweetalert2@11.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>点击按钮示例</h1>
-        <button class="action-btn" onclick="handleClick()">点击我</button>
-        <p id="response-message"></p>
-    </div>
+    <!-- 页面顶部一行 -->
+    <header class="top-header">
+        <div class="navbar">
+            <img src="userpage1.webp" alt="Logo" class="logo">
+            <ul>
+              <a href="#home">首页</a>
+              <a href="#courses">全部课程</a>
+              <a href="#community">模型</a>
+              <a href="#user-center">笔记</a>
+              <a href="#library">题库</a>
+            </ul>
+        </div>
+          
+    </header>
 
-    <script src="script.js"></script>
+    <main>
+        <p>Hello ByteAcademy!</p>
+    </main>
+    <script src="userpage1.js"></script>
+    <script src="socketpage.js"></script>
 </body>
+
+
+
 </html>
+
